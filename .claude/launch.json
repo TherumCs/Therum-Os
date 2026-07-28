@@ -1,0 +1,32 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "therum-2.0",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "/Users/bam/Local Sites/therum-os/therum-cms-2",
+        "run",
+        "dev:tsx"
+      ],
+      "port": 10009
+    },
+    {
+      "name": "therum-admin-upstream",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "/Users/bam/Local Sites/therum-os/therum-cms-2/admin",
+        "run",
+        "dev"
+      ],
+      "port": 3100
+    },
+    {
+      "name": "moderno-reference",
+      "url": "http://localhost:10025",
+      "port": 10025
+    }
+  ]
+}

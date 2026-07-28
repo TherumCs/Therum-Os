@@ -1,0 +1,13 @@
+# macOS / Google Drive noise
+.DS_Store
+.Spotlight-V100
+.Trashes
+Icon?
+._*
+
+# Nothing here should ever carry real credentials — see CLAUDE.md's
+# "Never store secrets" rule — but belt and braces.
+.env
+.env.*
+*.key
+*.pem
