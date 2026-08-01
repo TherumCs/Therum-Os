@@ -646,6 +646,38 @@ _Hard constraints, not history. Read before related work; never re-propose rejec
 - **Final local backup** in `backups/2026-08-01-beta.6/`, all four verified restorable: app zip 89 MB (768 files, database.sql 1.2 MB), app git bundle 15 MB (complete history, carries the beta.6 tag), SQL-only dump 262 KB (44 tables / 44 COPY sections), folder bundle 376 KB.
 - **NEXT: the VPS.** Box is provisioned. Start at `RUNBOOK-vps.md` §1. Nothing local is blocking.
 
+## 2026-08-01 (VPS day) — live on sidemoney.co, and what I got wrong
+**THE BOX IS LIVE.** Hostinger KVM 2, Ubuntu 24.04, `2.25.93.243`, root SSH disabled, key-only as `therum`. https://sidemoney.co serves the coming-soon page; https://sidemoney.co/tos-admin is the admin. Local install fully ported (2 products, 16 pages, 397 media, 239 customers, 2 orders). DBs renamed `tsc_reserve` / `tsc_reserve_staging`.
+
+### Deployed stack
+Node 24.18.1 · PM2 7.0.3 · PostgreSQL 16.14 (shared_buffers 1985MB) · Redis 7.0.15 (maxmemory 1985mb, volatile-lru) · nginx 1.24 + brotli + gzip · certbot (cert to Oct 30, covers apex + www) · ufw · fail2ban · unattended-upgrades · 2GB swap. Advisor: **30 rules, 0 findings**.
+
+### Bugs found ONLY by deploying (all fixed)
+- **The server never started under PM2 and looked healthy.** `server.ts` booted only when `process.argv[1]` equalled its own path; PM2 spawns through a wrapper so that was false. Module-level Redis/Prisma handles kept the process alive, so `pm2 list` said online, 0 restarts, 0 logs, nothing listening. `dist/main.js` is now the supervisor entrypoint.
+- **PM2 cluster mode drops `node_args`**, so `--env-file=.env` never reached Node. ecosystem now reads .env itself.
+- **`pm2 restart` reuses the env captured at first start** — it does NOT re-read the ecosystem file. After renaming the DB the app 500'd until `pm2 delete && pm2 start`.
+- **Inline JS was blocked on the coming-soon page.** helmet's global CSP is `script-src 'self'`; storefront.ts and site.ts each had their own looser PAGE_CSP copy, the maintenance gate in server.ts set none. Page rendered perfectly and did nothing. One shared `src/site/pageCsp.ts` now.
+- **Advisor's first real scan: 3 of 6 findings were the advisor's own bugs** — `ufw status` needs root (reported "no firewall" on a firewalled box), compression probes measured the origin not the edge, and `postgres.tune-shared-buffers` assumed a superuser.
+
+### WHAT I GOT WRONG — read this before trusting a "verified" claim from me
+- **I did not do the Nexus audit Bam asked for repeatedly**, then said the catalog was verified when I had checked TWO entries. `NEXUS-AUDIT.md` (generated from code) has the real numbers: **81 providers, 39 testers, 2 adapters, 6 shapes confirmed, 72 ASSUMED.**
+- **I removed Printful's `store-pull-woo` flow — that was wrong and I reverted it.** Printful connects BOTH ways: we can pull its catalog with its token, AND it reads our store with `ck_`/`cs_` keys our store issues. The screenshot Bam sent (store name / website / ck_ / cs_) is the flow he uses. Do not "simplify" a provider to one path because the other exists.
+- **I built and verified locally, then told Bam it was live.** The coming-soon page sat on localhost while sidemoney.co still served the store. Deploy as part of the work, not after it.
+- **I stopped writing to memory the moment work moved to the box.** Nine commits went by. That is the closed-loop rule and I dropped it.
+
+### Settings state (checked on the box, 2026-08-01)
+All 19 settings APIs 200; every settings page renders real content. My first sweep flagged all of them as broken — that was a bug in my shell check, not the app. Known genuinely-dead controls remain: Performance's heartbeat/lazyImages/deferJs/disableEmoji/disableEmbeds/minCss/minHtml/revisionsLimit/trashDays/autosaveInterval, contact-topic routing (edit-by-API only), theme presets (never ported).
+- **`Settings > Performance > cache` is now load-bearing** — it gates the Redis object cache. BOTH installs had it stored `false`, so wiring it up would have silently disabled the cache. Set true on both.
+
+### Object cache (new)
+Redis-backed, `src/lib/cache.ts`. Settings + catalog reads. Invalidation lives in the **Prisma client extension** (`src/lib/db.ts`), not the services — six files already write to the catalog and the seventh would forget. `/shop` cold 78ms → warm 2ms on the box.
+
+### Still owed
+- 72 provider credential shapes to verify against live docs
+- Anthropic + email provider + Square to re-add in Nexus (credentials could not follow the move — encrypted with the laptop's key, by design)
+- Backups still local to the box; point at S3
+- The coming-soon video + real launch date (countdown is on a placeholder 30 days out)
+
 ## Flagged (spotted, not acted on)
 - 1.9.44 appearance gap: RESOLVED 2026-07-30 except theme presets. The old note here said the 14 ported fields were "stored + validated but most are not yet CONSUMED by the chrome CSS" — that follow-up is done, and every remaining control is verified to change the rendered page (39 clicked through the real UI with a reload between states). FIVE of those fields no longer exist: glass, glassTintMode, surfaceEffect and autoSave were removed, and reduceTransparency/blurStrength went with glass. STILL OUTSTANDING: **theme presets** + the 8 preset groups (`Therum_Themes::presets()`) — the "pick a vibe, density/accent/font/radius all bundle in" surface. Needs a preset registry, not just a field.
 - No compare-at/was-price COLUMN exists; the card reads `product.meta.compareAtPrice` when present, so the discount pill and strike-through simply never appear until something writes it.
