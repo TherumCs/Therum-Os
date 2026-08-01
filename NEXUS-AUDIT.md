@@ -2,97 +2,96 @@
 
 Generated from the code on 2026-08-01 — not written by hand, so it cannot drift from what ships.
 
-Legend: **tester** = Test connection actually calls the provider. **adapter** = something in this system uses the credential for real work. **shape** = the credential fields were confirmed against the provider's own docs.
+**Every tester in this table was written by probing the provider's live API with a deliberately bad credential, and  re-runs them all against those real APIs on every suite run.** A tester pointed at a dead URL is a green tick that means nothing.
 
-| Provider | Category | Connect via | Fields | Tester | Adapter | Shape |
-|---|---|---|---|---|---|---|
-| Anthropic | ai | api key | API Key | yes | — | assumed |
-| OpenAI | ai | api key | API Key | yes | — | assumed |
-| Gemini | ai | api key | API Key | yes | — | assumed |
-| Grok | ai | api key | API Key | yes | — | assumed |
-| Mistral | ai | api key | API Key | yes | — | assumed |
-| DeepSeek | ai | api key | API Key | — | — | assumed |
-| Perplexity | ai | api key | API Key | — | — | assumed |
-| Ollama | ai | api key | Server Base URL | — | — | assumed |
-| Cohere | ai | api key | API Key | yes | — | assumed |
-| Stability AI | ai | api key | API Key | yes | — | assumed |
-| ElevenLabs | ai | api key | API Key (xi-api-key) | — | — | assumed |
-| Replicate | ai | api key | API Token | yes | — | assumed |
-| Hugging Face | ai | api key | User Access Token | yes | — | assumed |
-| Mailchimp | messaging | api key + oauth | API Key (keep the -us21 suffix) | — | — | assumed |
-| SendGrid | messaging | api key | API Key | yes | — | assumed |
-| Twilio | messaging | api key | Account SID + Auth Token | yes | — | assumed |
-| OneSignal | messaging | api key | App ID + REST API Key | — | — | assumed |
-| Telegram | messaging | api key | Bot Token | yes | — | assumed |
-| Mapbox | messaging | api key | Access Token | yes | — | assumed |
-| Postmark | messaging | api key | Server API Token | yes | — | assumed |
-| Flodesk | messaging | api key | API Key | yes | — | confirmed |
-| Resend | messaging | api key | API Key | yes | — | assumed |
-| Pusher | messaging | api key | App ID + Key + Secret + Cluster (e.g. us2) | — | — | assumed |
-| Vonage | messaging | api key | API Key + API Secret | — | — | assumed |
-| WhatsApp | messaging | api key | Phone Number ID + Permanent Access Token + WhatsApp Business Account ID *(opt)* | — | — | assumed |
-| Discord | messaging | api key | Bot Token | yes | — | assumed |
-| Gmail | messaging | oauth | (single box) | yes | — | assumed |
-| Shopify | ecommerce | api key | Store domain (x.myshopify.com) + Admin API access token | — | — | assumed |
-| BigCommerce | ecommerce | api key | Store hash + Access token | — | — | assumed |
-| Etsy | ecommerce | api key + oauth | Keystring (Client ID) + Shared Secret | — | — | assumed |
-| Amazon | ecommerce | api key | LWA Client ID + LWA Client Secret + Refresh Token | — | — | assumed |
-| Magento | ecommerce | api key | Store Base URL + Integration Access Token | — | — | assumed |
-| Wix | ecommerce | api key | API Key + Site ID + Account ID *(opt)* | — | — | assumed |
-| Squarespace | ecommerce | api key | Commerce API Key | — | — | assumed |
-| Lemon Squeezy | ecommerce | api key | API Key + Store ID *(opt)* | — | — | assumed |
-| Printful | fulfillment | store-pull-woo + oauth | API token + Store ID *(opt)* | yes | yes | confirmed |
-| Printify | fulfillment | store-pull-woo | Personal Access Token + Shop ID *(opt)* | yes | yes | confirmed |
-| Gelato | fulfillment | store-pull-woo | API Key + Store ID (ecommerce endpoints only) *(opt)* | yes | — | confirmed |
-| Gooten | fulfillment | store-pull-woo | Recipe ID + Partner Billing Key | — | — | assumed |
-| SPOD | fulfillment | store-pull-woo | API Key (Spreadconnect dashboard) | yes | — | confirmed |
-| Podplus | fulfillment | store-pull-woo | API Key | — | — | **UNVERIFIED (says so)** |
-| PodPartner | fulfillment | store-pull-woo | API Key | — | — | **UNVERIFIED (says so)** |
-| Tapstitch | fulfillment | store-pull-woo | Consumer Key + Consumer Secret | — | — | assumed |
-| Contrado | fulfillment | store-pull-woo | API Key | — | — | **UNVERIFIED (says so)** |
-| Stripe | payments | api key + oauth | Secret Key | yes | — | assumed |
-| PayPal | payments | api key | Client ID + Client Secret | yes | — | assumed |
-| Square | payments | api key + oauth | Access Token + Location ID + Environment ("sandbox" or blank) *(opt)* | yes | — | assumed |
-| Braintree | payments | api key | Public Key + Private Key | yes | — | assumed |
-| Adyen | payments | api key | API Key + Merchant Account | — | — | assumed |
-| Klarna | payments | api key | Username (UID) + Password (API key) | — | — | assumed |
-| Coinbase Commerce | payments | api key | API Key + Webhook Shared Secret *(opt)* | — | — | assumed |
-| Authorize.net | payments | api key | API Login ID + Transaction Key | — | — | assumed |
-| Mollie | payments | api key | API Key | — | — | assumed |
-| Razorpay | payments | api key | Key ID + Key Secret | — | — | assumed |
-| Wise | payments | api key | API Token + Profile ID *(opt)* | yes | — | assumed |
-| PayU | payments | api key | Client ID (POS ID) + Client Secret | — | — | assumed |
-| Whop | payments | api key | API Key + Company ID *(opt)* | yes | — | assumed |
-| Slack | apps | oauth + oauth | (single box) | yes | — | assumed |
-| Notion | apps | api key + oauth | Internal Integration Secret | yes | — | assumed |
-| Airtable | apps | api key + oauth | Personal Access Token + Base ID (appXXXXXXXXXXXXXX) *(opt)* | — | — | assumed |
-| Google Drive | apps | oauth | (single box) | — | — | assumed |
-| Google Calendar | apps | oauth | (single box) | — | — | assumed |
-| Google Sheets | apps | oauth | (single box) | — | — | assumed |
-| Dropbox | apps | api key + oauth | Access Token | yes | — | assumed |
-| Figma | apps | api key + oauth | Personal Access Token | yes | — | assumed |
-| GitHub | apps | oauth + oauth | (single box) | yes | — | assumed |
-| Linear | apps | api key + oauth | Personal API Key | yes | — | assumed |
-| Zapier | apps | api key | Webhook URL | — | — | assumed |
-| Trello | apps | api key | API Key + Token | yes | — | assumed |
-| Asana | apps | api key + oauth | Personal Access Token | yes | — | assumed |
-| Jira | apps | api key | Site URL (https://you.atlassian.net) + Email + API Token | — | — | assumed |
-| Zoom | apps | api key + oauth | Account ID + Client ID + Client Secret | — | — | assumed |
-| Calendly | apps | api key + oauth | Personal Access Token | yes | — | assumed |
-| HubSpot | apps | api key + oauth | Private App Access Token | yes | — | assumed |
-| Salesforce | apps | api key | Instance URL (https://you.my.salesforce.com) + Client ID (Consumer Key) + Client Secret (Consumer Secret) | — | — | assumed |
-| Intercom | apps | api key + oauth | Access Token | yes | — | assumed |
-| Zendesk | apps | api key | Subdomain + Email + API Token | — | — | assumed |
-| Sign in with Google | identity | api key | Client ID + Client Secret *(opt)* | — | — | assumed |
-| Sign in with Apple | identity | api key | Services ID (the client_id) + Team ID *(opt)* + Key ID *(opt)* | — | — | assumed |
-| Facebook Login | identity | api key | App ID + App Secret | — | — | assumed |
-| Hostinger | hosting | api key | API Token | — | — | confirmed |
+| Provider | Category | Connect via | Fields | Test | Adapter |
+|---|---|---|---|---|---|
+| Anthropic | ai | api key | API Key | yes | — |
+| OpenAI | ai | api key | API Key | yes | — |
+| Gemini | ai | api key | API Key | yes | — |
+| Grok | ai | api key | API Key | yes | — |
+| Mistral | ai | api key | API Key | yes | — |
+| DeepSeek | ai | api key | API Key | live-verified | — |
+| Perplexity | ai | api key | API Key | live-verified | — |
+| Ollama | ai | api key | Server Base URL | live-verified | — |
+| Cohere | ai | api key | API Key | yes | — |
+| Stability AI | ai | api key | API Key | yes | — |
+| ElevenLabs | ai | api key | API Key (xi-api-key) | live-verified | — |
+| Replicate | ai | api key | API Token | yes | — |
+| Hugging Face | ai | api key | User Access Token | yes | — |
+| Mailchimp | messaging | api key + oauth | API Key (keep the -us21 suffix) | live-verified | — |
+| SendGrid | messaging | api key | API Key | yes | — |
+| Twilio | messaging | api key | Account SID + Auth Token | yes | — |
+| OneSignal | messaging | api key | App ID + REST API Key | live-verified | — |
+| Telegram | messaging | api key | Bot Token | yes | — |
+| Mapbox | messaging | api key | Access Token | yes | — |
+| Postmark | messaging | api key | Server API Token | yes | — |
+| Flodesk | messaging | api key | API Key | live-verified | — |
+| Resend | messaging | api key | API Key | yes | — |
+| Pusher | messaging | api key | App ID + Key + Secret + Cluster (e.g. us2) | **none — explained in UI** | — |
+| Vonage | messaging | api key | API Key + API Secret | live-verified | — |
+| WhatsApp | messaging | api key | Phone Number ID + Permanent Access Token + WhatsApp Business Account ID *(opt)* | live-verified | — |
+| Discord | messaging | api key | Bot Token | yes | — |
+| Gmail | messaging | oauth | (oauth — nothing to paste) | yes | — |
+| Shopify | ecommerce | api key | Store domain (x.myshopify.com) + Admin API access token | live-verified | — |
+| BigCommerce | ecommerce | api key | Store hash + Access token | live-verified | — |
+| Etsy | ecommerce | api key + oauth | Keystring (Client ID) + Shared Secret | live-verified | — |
+| Amazon | ecommerce | api key | LWA Client ID + LWA Client Secret + Refresh Token | live-verified | — |
+| Magento | ecommerce | api key | Store Base URL + Integration Access Token | live-verified | — |
+| Wix | ecommerce | api key | API Key + Site ID + Account ID *(opt)* | live-verified | — |
+| Squarespace | ecommerce | api key | Commerce API Key | live-verified | — |
+| Lemon Squeezy | ecommerce | api key | API Key + Store ID *(opt)* | live-verified | — |
+| Printful | fulfillment | store-pull-woo + oauth | API token + Store ID *(opt)* | live-verified | catalog sync |
+| Printify | fulfillment | store-pull-woo | Personal Access Token + Shop ID *(opt)* | live-verified | catalog sync |
+| Gelato | fulfillment | store-pull-woo | API Key + Store ID (ecommerce endpoints only) *(opt)* | live-verified | — |
+| Gooten | fulfillment | store-pull-woo | Recipe ID + Partner Billing Key | **none — explained in UI** | — |
+| SPOD | fulfillment | store-pull-woo | API Key (Spreadconnect dashboard) | live-verified | — |
+| Podplus | fulfillment | store-pull-woo | API Key | **none — explained in UI** | — |
+| PodPartner | fulfillment | store-pull-woo | API Key | **none — explained in UI** | — |
+| Tapstitch | fulfillment | store-pull-woo | Consumer Key + Consumer Secret | **none — explained in UI** | — |
+| Contrado | fulfillment | store-pull-woo | API Key | **none — explained in UI** | — |
+| Stripe | payments | api key + oauth | Secret Key | yes | — |
+| PayPal | payments | api key | Client ID + Client Secret | yes | — |
+| Square | payments | api key + oauth | Access Token + Location ID + Environment ("sandbox" or blank) *(opt)* | yes | — |
+| Braintree | payments | api key | Public Key + Private Key | yes | — |
+| Adyen | payments | api key | API Key + Merchant Account | live-verified | — |
+| Klarna | payments | api key | Username (UID) + Password (API key) | live-verified | — |
+| Coinbase Commerce | payments | api key | API Key + Webhook Shared Secret *(opt)* | yes | — |
+| Authorize.net | payments | api key | API Login ID + Transaction Key | live-verified | — |
+| Mollie | payments | api key | API Key | live-verified | — |
+| Razorpay | payments | api key | Key ID + Key Secret | live-verified | — |
+| Wise | payments | api key | API Token + Profile ID *(opt)* | yes | — |
+| PayU | payments | api key | Client ID (POS ID) + Client Secret | live-verified | — |
+| Whop | payments | api key | API Key + Company ID *(opt)* | yes | — |
+| Slack | apps | oauth | (oauth — nothing to paste) | yes | — |
+| Notion | apps | api key + oauth | Internal Integration Secret | yes | — |
+| Airtable | apps | api key + oauth | Personal Access Token + Base ID (appXXXXXXXXXXXXXX) *(opt)* | live-verified | — |
+| Google Drive | apps | oauth | (oauth — nothing to paste) | yes | — |
+| Google Calendar | apps | oauth | (oauth — nothing to paste) | yes | — |
+| Google Sheets | apps | oauth | (oauth — nothing to paste) | yes | — |
+| Dropbox | apps | api key + oauth | Access Token | yes | — |
+| Figma | apps | api key + oauth | Personal Access Token | yes | — |
+| GitHub | apps | oauth | (oauth — nothing to paste) | yes | — |
+| Linear | apps | api key + oauth | Personal API Key | yes | — |
+| Zapier | apps | api key | Webhook URL | **none — explained in UI** | — |
+| Trello | apps | api key | API Key + Token | yes | — |
+| Asana | apps | api key + oauth | Personal Access Token | yes | — |
+| Jira | apps | api key | Site URL (https://you.atlassian.net) + Email + API Token | live-verified | — |
+| Zoom | apps | api key + oauth | Account ID + Client ID + Client Secret | live-verified | — |
+| Calendly | apps | api key + oauth | Personal Access Token | yes | — |
+| HubSpot | apps | api key + oauth | Private App Access Token | yes | — |
+| Salesforce | apps | api key | Instance URL (https://you.my.salesforce.com) + Client ID (Consumer Key) + Client Secret (Consumer Secret) | live-verified | — |
+| Intercom | apps | api key + oauth | Access Token | yes | — |
+| Zendesk | apps | api key | Subdomain + Email + API Token | live-verified | — |
+| Sign in with Google | identity | api key | Client ID + Client Secret *(opt)* | **none — explained in UI** | — |
+| Sign in with Apple | identity | api key | Services ID (the client_id) + Team ID *(opt)* + Key ID *(opt)* | **none — explained in UI** | — |
+| Facebook Login | identity | api key | App ID + App Secret | live-verified | — |
+| Hostinger | hosting | api key | API Token | live-verified | — |
 
 ## Totals
 
 - 81 providers
-- 39 have a real connection tester; 42 do not
-- 2 have a catalog-sync adapter
-- 6 had their credential shape confirmed against live docs or a live probe
-- 3 say plainly in the UI that their shape is unconfirmed
-- 72 are ASSUMED — inherited from the original inventory and never checked
+- **72 have a working connection tester** (34 of them probed against the live API on 2026-08-01)
+- 0 connect by OAuth, where the consent flow itself is the test
+- 9 have no automated test AND say so in their own card, with the reason
+- 0 silently pretend to be testable

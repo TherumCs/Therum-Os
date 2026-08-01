@@ -678,6 +678,21 @@ Redis-backed, `src/lib/cache.ts`. Settings + catalog reads. Invalidation lives i
 - Backups still local to the box; point at S3
 - The coming-soon video + real launch date (countdown is on a placeholder 30 days out)
 
+## 2026-08-01 (late) — Nexus audit DONE, deployed
+- **37 -> 72 of 81 providers have a working connection tester.** 34 of them were probed against the LIVE API with a deliberately bad credential before the tester was written. `test/connection-testers.test.mjs` re-runs 31 of them against those real APIs on every suite run — a tester nobody pointed at the real thing is a green tick that means nothing, which was Bam's whole complaint.
+- `NEXUS-AUDIT.md` is GENERATED FROM THE CODE. Do not hand-edit it; regenerate.
+- **Traps the probing caught that reasoning would not have:**
+  - Authorize.Net answers **HTTP 200 when auth fails** — the truth is a code in the body (E00007) behind a BOM that breaks JSON.parse.
+  - Adyen and Klarna have **separate live and test hosts**; a key works on exactly one. Testers try live, then fall back.
+  - A Mailchimp key's **-us21 suffix IS the datacenter**; the request must go to that host.
+  - Shopify, BigCommerce, Magento, Jira, Zendesk are addressed by the operator's **own tenant** — build the URL from the stored domain. A fixed host 404s for everyone.
+  - Amazon needs the **refresh-token exchange**; it is the only call proving all three values agree.
+  - **Vonage joins with ':' not '|'.** My tester had it wrong; the new test caught it. SEPARATORS ARE PER PROVIDER — check `join` before writing a tester.
+- **9 providers have no automated test and now SAY SO in their own card**: pusher (HMAC per request), zapier (testing = firing your Zap), coinbase-commerce (their API 503s), google-signin + apple-signin (only a real redirect proves the pair), gooten/podplus/podpartner/tapstitch/contrado (no public API). Zero silently pretend.
+- **REVERTED my own mistake**: I had removed `connectsVia: 'store-pull-woo'` from Printful/Printify reasoning that catalogSync pulls FROM them. Printful connects BOTH ways and the store-pull one (store name / website / ck_ / cs_) is what Bam actually uses. Never collapse a provider to one path because another exists.
+- Also fixed: Printful's **Store ID was silently dropped** (credential is `token|storeId`, code read index 2).
+- 403 tests. Deployed to the box; https://sidemoney.co still serving the coming-soon page.
+
 ## Flagged (spotted, not acted on)
 - 1.9.44 appearance gap: RESOLVED 2026-07-30 except theme presets. The old note here said the 14 ported fields were "stored + validated but most are not yet CONSUMED by the chrome CSS" — that follow-up is done, and every remaining control is verified to change the rendered page (39 clicked through the real UI with a reload between states). FIVE of those fields no longer exist: glass, glassTintMode, surfaceEffect and autoSave were removed, and reduceTransparency/blurStrength went with glass. STILL OUTSTANDING: **theme presets** + the 8 preset groups (`Therum_Themes::presets()`) — the "pick a vibe, density/accent/font/radius all bundle in" surface. Needs a preset registry, not just a field.
 - No compare-at/was-price COLUMN exists; the card reads `product.meta.compareAtPrice` when present, so the discount pill and strike-through simply never appear until something writes it.
