@@ -11,3 +11,8 @@ Icon?
 .env.*
 *.key
 *.pem
+
+# Backups live in the folder (Google Drive syncs them offsite) but never in git:
+# a 90 MB zip per run would bloat the repo permanently, and the zip contains a
+# full database dump — customer rows included.
+backups/
