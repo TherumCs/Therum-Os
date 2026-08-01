@@ -634,6 +634,18 @@ _Hard constraints, not history. Read before related work; never re-propose rejec
 - The 126 duplicate content hashes are real but NOT free to delete: the three 8.8 MB `womens-4tlom-hero.png` copies have 9 library rows pointing at them. Deduping means rewiring references, which is a change, not cleanup. 52 MB of PNG across 204 files is the real storefront LCP problem — WebP conversion is the win, still unbuilt.
 - STILL NEVER EXERCISED: the 12 deployed-only advisor rules, `deploy/nginx.conf` against a real domain, the sudoers grant, and every Hostinger API call. All first-run on the box.
 
+## 2026-08-01 (later) — beta.6 cut, final local backup, VPS is next
+- **v2.0.0-beta.6** tagged and pushed (`33fda28`). 361 tests. This is the cut that goes on the box.
+- **Quick checkout re-ordered** to options -> where it ships -> how it is paid. The strip used to sit ABOVE the address, so the card asked "how are you paying" before "where are we sending it", and led with greyed pills when no provider was connected. Method strip now fetched only when the shopper reaches the payment step. Wallets stay above the form (they return the address themselves and skip that step) and render only when a provider is ready.
+- **Shop columns fixed — three stacked bugs**, all found by measuring rendered geometry, none visible in the markup:
+  1. Every card shipped `c-product-grid__item--4-per-row` hardcoded. That class IS the card width in the ported theme (`width: calc(100%/N)`), so the list's class changed and the cards never did.
+  2. TWO column systems — productGrid's fallback `repeat(4,1fr)` and shopToolbar's `[data-cols]` — with different breakpoints. Whichever loaded last won. Now one, rendered server-side.
+  3. `.wrap` was a literal `max-width:1080px`, so more columns made cards THINNER instead of the grid wider. Now reads `--th-site-max` like the rest of the site.
+- Responsive caps now fire: 4 -> 3 -> 2 -> 1. The mobile rule needed a `:not()` purely to match the specificity of the tablet rule above it — a media query adds no specificity, so the wider rule was winning at 390px.
+- **Per-device column choice no longer outranks the merchant forever**: localStorage now stores the default it was chosen against and steps aside when that default changes. Likeliest reason Bam's Settings change "did nothing" — his browser had a stored value.
+- **Final local backup** in `backups/2026-08-01-beta.6/`, all four verified restorable: app zip 89 MB (768 files, database.sql 1.2 MB), app git bundle 15 MB (complete history, carries the beta.6 tag), SQL-only dump 262 KB (44 tables / 44 COPY sections), folder bundle 376 KB.
+- **NEXT: the VPS.** Box is provisioned. Start at `RUNBOOK-vps.md` §1. Nothing local is blocking.
+
 ## Flagged (spotted, not acted on)
 - 1.9.44 appearance gap: RESOLVED 2026-07-30 except theme presets. The old note here said the 14 ported fields were "stored + validated but most are not yet CONSUMED by the chrome CSS" — that follow-up is done, and every remaining control is verified to change the rendered page (39 clicked through the real UI with a reload between states). FIVE of those fields no longer exist: glass, glassTintMode, surfaceEffect and autoSave were removed, and reduceTransparency/blurStrength went with glass. STILL OUTSTANDING: **theme presets** + the 8 preset groups (`Therum_Themes::presets()`) — the "pick a vibe, density/accent/font/radius all bundle in" surface. Needs a preset registry, not just a field.
 - No compare-at/was-price COLUMN exists; the card reads `product.meta.compareAtPrice` when present, so the discount pill and strike-through simply never appear until something writes it.
