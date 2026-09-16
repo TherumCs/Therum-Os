@@ -491,3 +491,8 @@ design 1787580063 (every prior order was L/XL). Logged in [[vendor-order-sync-me
 - `syncCustomers` used Prisma `NOT { meta: { path: ['source'], equals: 'wp-import' } }`; in Postgres that is `NOT (NULL)` for any customer without a `source` key → 0 of 57 eligible customers mirrored. I tested the function only on synthetic data that all had the key. The same construct already existed in the older drop broadcast, so that button had been mailing nobody too.
 - Fix: engagement-only Prisma query, meta gate in JS. Verified: 57 mirrored, 0 automations fired.
 - Lesson: a nightly job that "ran fine" with scanned:0 is a failure signal, not a quiet night — the first run's numbers must be checked against a raw SQL count.
+
+## 2026-09-16 — Put Sidemoney into the Therum OS product repo (again)
+- What: Bam's standing rule is that `TherumCs/Therum-OS-2.0` is Therum OS only. Beta 10 shipped with Sidemoney hard-coded in nine source files (titles, Meta verification token, logo path, careers inbox, category editorial…) and I added the store's live nginx + payment-bridge under `deploy/live` an hour before he asked. He'd said this before.
+- Fix: de-branded the product (settings/env/site pack), moved the Sidemoney pack into this repo at `addons/tsc/site-pack/`, scrubbed names from comments/docs. Verified live: titles + Meta tag from settings, category landings from the pack, logo from env.
+- Rule (memory `product-vs-instance`): anything with a store's name, domain, token, copy or config goes in the instance repo, never the product. Check `git grep -i sidemoney` before every product commit.
