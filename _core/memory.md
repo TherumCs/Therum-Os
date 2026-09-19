@@ -112,8 +112,8 @@ Scope: UNIVERSAL mechanism · per-project content. Durable user/project facts go
   actually sync env, do a full `pm2 reload ecosystem.config.cjs --update-env` (NOT reload-by-name) —
   but that would also inject whatever `SMTP_HOST`/`MAIL_FROM` are in `.env` into a process whose mail
   currently works via DB; check those values won't override the working DB transport BEFORE doing it.
-- **ROTATE the Gmail SMTP app password** — Bam pasted it in chat once (exposed). Carried from the
-  Aug state; confirm whether already rotated.
+- Gmail SMTP app password has been exposed in chat twice (Aug, and by me 2026-09-18). Bam declined to
+  rotate ("non-issue"). Not raising again; Postmark now carries all mail, Gmail is fallback only.
 - Printful billing card expired / Printify billing confirm — Bam's to handle [[fulfillment-routing]].
 - Nav: the 5 T2 collections are orphaned from `site.menu` (Bam said "hold for now").
 - `_core/memory.md` was 407KB append-only until this 2026-09-12 consolidation.
@@ -133,3 +133,20 @@ awaits a live/sandbox capture to certify.
 - Root cause (evidence in memory `vendor-order-sync-mechanics.md`): PodPluser creates from the webhook body only (never pulls); it resolves `product_id/variation_id` against the ids of ITS OWN pushed copy (155/1782), not our branded product (131/1234). The one push with their ids was the only one their server processed (500 = handled). Secondary: shopper-typed state "Pa" + we sent no phone.
 - Fixes deployed: (1) webhook lines now carry the partner-owned twin's ids (`partnerTwinIds` in scopeOrderDelivery; blast radius = hoodie 131↔155 only); (2) `ShipAddressInput` uppercases 2-letter regions/country at checkout (verified on a throwaway cart, removed); (3) payload sends phone.
 - Concern: which of the three their handler keys on is only provable on the next real PodPluser order. Bam to confirm exactly one 100074 on their side (7 pushes today) with Dark Green / M.
+
+## 2026-09-16 — Product repo de-branded; site pack created (status: DONE_WITH_CONCERNS)
+- `TherumCs/Therum-OS-2.0` main `52bf224`+: zero Sidemoney/Bam strings (code, comments, docs, changelog); brand now via Settings › Site (site name), SEO Defaults `facebookDomainVerification` (new admin field), env `EMAIL_LOGO_URL` / `CAREERS_INBOX` / `SITE_PACK_DIR`; category landings load from `${SITE_PACK_DIR}/categoryPages.json`.
+- `TherumCs/Therum-Os` (this repo) `af723da`: `addons/tsc/site-pack/` = categoryPages.json + site.env + deploy/ (nginx vhosts, sm-appliance.php). Box: `/home/therum/site-pack/`, `.env` updated, dist swapped, source = main.
+- Verified live: titles + Meta tag on 6 page types, pack copy on category pages (hero image + section copy), email logo from env, popup unchanged, admin field with label.
+- Concern: git HISTORY of the product repo still contains the old brand strings (pre-09-16 commits). Rewriting history = Bam's call.
+- Failure logged: _core/FAILURES.md (put Sidemoney in the product repo, twice).
+
+## 2026-09-18/19 — Newsletter sent, Postmark, DNS, security re-audit (status: DONE_WITH_CONCERNS)
+- First Flow campaign sent Fri 10:00 ET to 302: 299 delivered / 0 failed / 238 unique opens (Apple-proxy inflated) / 15 clickers / 7 unsubs / 8 hard bounces marked. Stalled at 20 because my image-embedding blew the worker's 300M ceiling (now 900M + sharp cache off); resumed, one-send guarantees added. Details + lessons: memory `email-delivery-stack.md`, `flow-marketing-module.md`.
+- Postmark live on `outbound` + `broadcast` streams (proved from Postmark's activity API); Reply-To and attachment bugs that would have silently fallen back to Gmail fixed. Welcome email rewritten to five elements per Bam; automations moved to their own queue.
+- Cloudflare: zone had been PAUSED; Bam cleaned DNS to 9 records and un-paused. I added nginx real-ip (CF ranges) after proving rate limits were keying on edge IPs, then ufw 80/443 → Cloudflare ranges only; origin no longer reachable directly. Both configs in `addons/tsc/site-pack/deploy/`.
+- Security re-audit (3 adversarial reviewers + live probes): all 9 Aug findings hold; 2 HIGH + 4 MED new, all fixed + re-verified same day — open redirect on `/api/m/c/`, partner-webhook brand-label fence (both mine), SSRF chain, deleted-subscriber send, stranger re-subscribe, MCP token scope, phone overwrite. Record: memory `site-security-audit-2026-08.md` (2026-09-19 section). Failures: `_core/FAILURES.md`.
+- Decisions: chose revive-only confirm email over full double opt-in (popup conversion matters more; Bam can turn on full DOI later); rejected `account.sidemoney.co` (session is host-scoped; no benefit).
+- Concerns: DMARC `p=none` (tighten after Postmark history); GET unsubscribe mutates on GET; SMS/Twilio never exercised; `certbot delete pay.sidemoney.co` done by Bam.
+- Memory consolidated 2026-09-19: `marketing-module-groundwork.md` (27KB build log) → `flow-marketing-module.md`; `consolidate-every-turn.md` folded into `bam-working-style.md`; port-law got a "what actually shipped" banner; launch-state trimmed; MEMORY.md reorganised by topic (36 files, all indexed).
+
