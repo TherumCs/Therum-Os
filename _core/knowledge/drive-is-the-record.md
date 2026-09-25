@@ -19,3 +19,6 @@ Bam, 2026-09-25: **"bro is all this work added to the mds on fucking drive?"** �
 Also 2026-09-25: `/Users/bam/Local Sites/therum-os/therum-cms-2` had vanished from the Mac; GitHub main was intact (`d784d89`), re-cloned to the same path. Verify the path exists before assuming the build tree is there.
 
 See [[bam-working-style]] [[product-vs-instance]] [[github-access]].
+
+**Consolidation deletes things. Prove the replacement carries them first** (2026-09-25). On 09-19 I merged a 27KB build log into a durable file and deleted the dated entries "because they are covered elsewhere" — they were not. Lost until Bam asked me to re-read the whole conversation: the newsletter copy as actually sent, the DM-not-reply rule, the flood-fill method for grey baked into product photos, and the headless-render recipe. **Before deleting any block during a consolidation, grep the destination files for a distinctive phrase from it; if the phrase is not there, the content was not merged, it was dropped.** Same check makes a good audit: list every distinct thing that happened in a session, grep the record for each, report what is missing — cheap, and it catches exactly this.
+
