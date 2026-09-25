@@ -1,5 +1,6 @@
 ## How to work with Bam (read these first)
 - [Anticapitalist script](anticapitalist-script.md) — BAM'S STANDING LAW, hook-loaded every turn: 200≠working, no single-shot audits, verify end-to-end, use the setup, own failures
+- [Drive is the record](drive-is-the-record.md) — HARD RULE: mirror memory to `_core/knowledge/` + update `_core/memory.md` + commit both repos at EVERY loop close; never say "recorded" until it is
 - [Quote before acting](quote-before-acting.md) — loop step 3: quote the instruction in Bam's words or the action is not authorised
 - [Bam's working style](bam-working-style.md) — do the whole thing without asking; when he says it's wrong it's wrong; consolidate memory every turn; treat what he states as fact
 - [Catch the gaps yourself](catch-the-gaps-yourself.md) — his #1 complaint: stop shipping half-working things; walk the WHOLE flow before claiming done
