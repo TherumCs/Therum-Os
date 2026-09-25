@@ -38,3 +38,15 @@ metadata:
 **Open / not built:** per-campaign From name; social posting is calendar-only; automations are email-only; frequency cap never exercised in anger; SMS never sent. Bam owes: Gather Food Hall follow-up dates, pop-up list page.
 
 See [[coupon-system]] [[email-delivery-stack]] [[wp-customer-migration]] [[live-store-real-money]].
+
+**The first newsletter, as actually sent** (campaign `cmu4hot8z000028kzjovpjnau`, Fri 2026-09-18 10:00 ET, subject *"Sixers Season, Bird Season, and the Gather Food Hall pop-up"*, preheader *"Jersey pre-orders, Bird Season restocks, and where we pop up next."*). Block order and the copy Bam settled on after ~8 rounds — reuse this as the house structure:
+1. logo · eyebrow "The Sidemoney Company" · **"Two seasons. One label."**
+2. *"À Pas Dorés means with golden steps. It is our sports label, made for the teams and the eras that raised us, in the language of money. Two capsules are live right now. Bird Season for the Eagles and Sixers Season for the Sixers."* — he asked twice for the capsules to be NAMED, and for the Gather sentence to come out of the intro (it has its own section).
+3. À Pas Dorés cover image → **Sixers Season / "Trust the process."** → '96 Series $120 product block → "Shop Sixers Season". Copy ends on facts; he killed the sales tag *"A limited run, for the ones who claim it"* ("such a fucking retarded line").
+4. stadium hero → **Bird Season / "The city's colors, worn loud."** → Kelly Green practice jersey $75 → "Shop Bird Season". Colour vote is **DM @sidemoneyco**, not reply.
+5. **Around the shop / "Money you can carry."** → Money Wash Wallet $70, Snakeskin Pin $4 → "Shop everything".
+6. **Gather Food Hall / "Thank you for pulling up."** — Sunday Sept 13, Eagles opener, kickoff 4:25, thanks. Then the sentence he explicitly kept: *"We will be back at Gather, and at a few other spots around Philly, from now until December. An official list is coming with every pop-up and every date, and this list gets it first. Want us in your city? DM @sidemoneyco and say where."*
+7. **"Read more stories from our blog"** → /blog (he renamed it from "Read the stories" once he learned where it pointed — label must say where it goes).
+8. footer line: *"You are getting this because you signed up with The Sidemoney Company. Codes, drops and pop-up dates land here first."*
+
+**Reply is never a CTA.** Mail goes from commoncents@sidemoney.co and bounces/auto-replies land on Bam; he does not want an inbox to work. Every "tell us" ask is **DM @sidemoneyco** (link styled `color:#070707;font-weight:700;text-decoration:underline`). `replyTo` is still set to commoncents so a reply is not lost.
