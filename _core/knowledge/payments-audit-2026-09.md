@@ -1,0 +1,26 @@
+---
+name: payments-audit-2026-09
+description: "full payment-method audit 2026-09-10 — every checkout method's real rail + status; PayPal strand bug, WooPay BNPL capability, Cash App not activated, the admin NOT-CONNECTED card lie"
+metadata:
+  node_type: memory
+  type: project
+  originSessionId: e745e2aa-9578-48ef-9843-d125d121f24c
+  modified: 2026-09-10T21:57:50.025Z
+---
+
+Triggered by a customer ("pay in 4 didn't take the money"). "Pay in 4" = **PayPal Pay in 4**. Full audit of every offered checkout method.
+
+**Architecture (the key mental model):** methodRegistry (`src/lib/payments/methodRegistry.ts`) resolves each method to a provider by "first CONNECTED provider in its list" — card/wallets/BNPL/cashapp → **stripe**, paypal/venmo/paypal_credit → **paypal**. BUT the storefront CLIENT overrides this: `settleWoopay()` in `checkoutFlow.ts` sends `provider:'woopay'` for card + all wallets + klarna/affirm/afterpay/cashapp, so the REAL charge rail for all of those is **WooPayments/WCPay**, not the standalone Stripe account. PayPal/Venmo/Credit ride the **paypal** gateway (redirect + capture-on-return). Availability is gated on the `stripe` connection while the money actually rides `woopay` — a latent fragility (disconnect stripe → card/BNPL vanish though woopay works). FLAGGED, not fixed.
+
+**How to probe capability without charging:** call `engineSend('POST','/wc/v3/payments/sm/charge',{amount,currency,sm_order_id,methods:[X]})` from `dist/counter/woopayBridge.js` — mints an UNCONFIRMED intent (no money). client_secret present = the WCPay account supports method X. Result 2026-09-10: card/klarna/affirm/afterpay = OK; **cashapp = 500 "payment method type cashapp is invalid… activate in dashboard"** (NOT activated on the account). PayPal probe: `connectionService.credentialFor('paypal')` → cred is **live** (env=live, webhookId set); createIntent returns an approval URL with return_url.
+
+**Findings:**
+- **PayPal / Venmo / Pay-in-4 / Credit:** WAS 100% broken — 7/7 PayPal orders ever = failed, ZERO captured. Cause: PayPal only AUTHORISES on approval, money moves on capture-at-return; `return_url` was set only in the Venmo branch → plain PayPal approved then stranded, never captured (`finalizeReturn`→`capturePaypalOrder` is the fix). Patch deployed **2026-09-03**; the real customer (Zell Lewis) failed 2026-09-02 (pre-patch, $120+$183, NOT charged — his PayPal orders now 404/expired). ZERO PayPal orders since the patch → capture is code-correct + account-live but **UNVERIFIED end-to-end** (needs one real approval).
+- **card + Apple/Google Pay + Link (woopay):** working — real captured orders 100067 (Aug 21), 100070 (Sep 1), bank deposits landing (last $116.22 → MasterCard ••6887 on Sep 3). Wallet UI still device-test-only.
+- **Klarna / Affirm / Afterpay (woopay):** account supports them (intent OK) + client confirm/redirect/return path correct — but **UNVERIFIED end-to-end** (needs a real approval each).
+- **Cash App:** OFFERED (available=true, renders as a live button) but createIntent 500s — not activated on the WCPay account. A `comingSoon` flag alone will NOT hide it (client only renders comingSoon inert when the provider is UNconnected; cashapp resolves to connected stripe). To hide: drop its connected providers too, or activate Cash App Pay on the Stripe/WCPay dashboard.
+- **Dashboard "WooPayments NOT CONNECTED / $0" card:** FALSE readout. `woopayBridge.overview()` returns `connected:true`, account complete, deposits enabled. The badge is rendered by the SEPARATE admin frontend app (therum-cms-admin), which misreads the response — NOT in the API/storefront repo. $0 balance is real+fine (auto-deposited daily to bank).
+
+**ROOT CAUSE + FIX (2026-09-10, deployed):** PayPal cannot ride the WooPay/WCPay rail — Stripe refuses the `paypal` method type on connected accounts ("does not support Connect charges … on behalf of connected accounts"); Klarna/Afterpay/Affirm DO (that's why they passed). So PayPal must use the standalone Orders v2 gateway. The real break: PayPal only AUTHORISES on approval, WE capture, and capture fired ONLY from the browser return/poll — approve-then-close-tab = lost order. The webhook safety net was dead too: `parseEvent` ignored CHECKOUT.ORDER.APPROVED and read our order id from top-level `resource.custom_id` (undefined on that event; real id is `purchase_units[0].custom_id`). Fix: `parseEvent` resolves the approval (purchase_units custom_id + resource.id); `paymentGateway.service._apply` now CAPTURES on `checkout.approved` server-side — browser-independent, guarded to pending orders only, idempotent via `capture-<orderId>`. Verified against Zell's REAL stored event (kind→checkout.approved, resolves our order id → would capture). Covers PayPal + Pay-in-4 + Credit + Venmo (all emit CHECKOUT.ORDER.APPROVED). To probe WCPay method capability: `engineSend('POST','/wc/v3/payments/sm/charge',{amount,currency,sm_order_id,methods:[X]})`.
+
+**Certification needs (can't be faked — real human approval):** one controlled test each for PayPal Pay-in-4, Klarna, Affirm, Afterpay → watch it settle (markPaid + receipt + not stuck pending). Same controlled-order pattern as the WooPay session ([[woopayments-engine]]). See [[live-store-real-money]] [[anticapitalist-script]].

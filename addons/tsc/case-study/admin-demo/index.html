@@ -1,0 +1,267 @@
+<title>Therum OS Admin Demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --side:#16181e; --side-ink:#e9eaee; --side-mute:#8b8f98; --side-line:rgba(255,255,255,.08); --side-active:rgba(255,255,255,.09);
+    --top:#ffffff; --ground:#fafafa; --ink:#0a0a0a; --mute:#6b6f76; --line:#e7e7e7; --accent:#e83b3b; --blue:#2f5cff;
+    --pill:#f1f2f4; --pill-ink:#3b3f46; --shadow:0 20px 60px rgba(0,0,0,.28);
+    --sidew:256px; --toph:71px;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --ground:#111214; --top:#17181b; --ink:#f2f2f2; --mute:#9a9ea6; --line:#2a2c31; --pill:#24262b; --pill-ink:#d4d6db; } }
+  :root[data-theme="dark"]{ --ground:#111214; --top:#17181b; --ink:#f2f2f2; --mute:#9a9ea6; --line:#2a2c31; --pill:#24262b; --pill-ink:#d4d6db; }
+  html,body{height:100%}
+  body{margin:0;background:var(--ground);color:var(--ink);font:14px/1.45 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;overflow:hidden}
+  .app{display:grid;grid-template-columns:var(--sidew) 1fr;grid-template-rows:var(--toph) 1fr;height:100%;min-height:100%}
+  /* ── sidebar ── */
+  .side{grid-row:1/3;background:var(--side);color:var(--side-ink);display:flex;flex-direction:column;min-height:0}
+  .brand{display:flex;align-items:center;gap:10px;padding:14px 16px 12px;border-bottom:1px solid var(--side-line)}
+  .brand .mark{width:30px;height:30px;border-radius:8px;background:#fff;color:#111;font-weight:700;display:grid;place-items:center;font-size:14px;flex:none}
+  .brand b{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand small{display:block;color:var(--side-mute);font-size:11px;margin-top:1px}
+  .search{margin:12px 12px 6px;height:34px;border-radius:9px;background:rgba(255,255,255,.06);display:flex;align-items:center;gap:8px;padding:0 10px;color:var(--side-mute);font-size:12.5px}
+  .search kbd{margin-left:auto;font:600 10px/1 Inter,sans-serif;background:rgba(255,255,255,.1);padding:4px 6px;border-radius:5px;color:var(--side-ink)}
+  nav{flex:1;overflow:auto;padding:6px 8px 12px;min-height:0}
+  .group{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--side-mute);padding:14px 10px 6px;display:flex;align-items:center;gap:6px}
+  .group i{font-style:normal;opacity:.6}
+  .item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--side-ink);cursor:pointer;font-size:13.5px;border:0;background:none;width:100%;text-align:left;font-family:inherit}
+  .item:hover{background:rgba(255,255,255,.05)}
+  .item.on{background:var(--side-active);font-weight:600}
+  .item.on::before{content:"";width:3px;height:18px;background:var(--accent);border-radius:2px;margin-left:-10px;margin-right:2px}
+  .item svg{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+  .item.dim{opacity:.45;cursor:default}
+  .side .foot{border-top:1px solid var(--side-line);padding:10px 12px;display:grid;gap:8px}
+  .side .foot .row{display:flex;gap:8px}
+  .side .foot .btn{flex:1;font-size:11.5px;padding:6px 8px;border-radius:7px;background:rgba(255,255,255,.07);color:var(--side-ink);text-align:center;border:0;cursor:default}
+  .side .foot .ver{display:flex;justify-content:space-between;color:var(--side-mute);font-size:11px}
+  .side .foot .ver::before{content:"●";color:#3ddc84;margin-right:6px;font-size:8px;line-height:1.6}
+  /* ── topbar ── */
+  .top{background:var(--top);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;gap:12px}
+  .top h1{font-size:15px;font-weight:600;margin:0}
+  .top .demo{margin-left:6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);border-radius:999px;padding:3px 8px}
+  .top .sp{flex:1}
+  .top .ic{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;color:var(--mute);background:transparent}
+  .top .ic svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6}
+  .top .av{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:13px}
+  /* ── content ── */
+  .main{position:relative;overflow:auto;min-height:0;background:var(--ground)}
+  .stage{position:relative;width:100%;max-width:1184px;margin:0 auto}
+  .stage img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+  .stage.one{max-width:none;width:1184px}
+  .hot{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:8px;padding:0}
+  .hot:hover,.hot:focus-visible{outline:2px solid var(--blue);outline-offset:-2px;background:rgba(47,92,255,.06)}
+  .hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--ground);font-size:12px;padding:8px 12px;border-radius:999px;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap}
+  .hint.show{opacity:.92}
+  /* ── tour ── */
+  .tour{position:fixed;right:20px;bottom:20px;width:min(360px,calc(100vw - 40px));background:var(--top);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 16px 14px;display:none;z-index:5}
+  .tour.open{display:block}
+  .tour .step{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:600}
+  .tour h2{font-size:15px;margin:6px 0 6px}
+  .tour p{margin:0;color:var(--mute);font-size:13px}
+  .tour .row{display:flex;gap:8px;margin-top:12px}
+  .tour button{font:600 12.5px Inter,sans-serif;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--pill);color:var(--pill-ink);cursor:pointer}
+  .tour button.pri{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+  .tour .x{margin-left:auto;background:none;border:0;color:var(--mute);font-size:16px;line-height:1;padding:6px 8px}
+  .tourbtn{position:fixed;right:20px;bottom:20px;z-index:4;font:600 12.5px Inter,sans-serif;padding:10px 14px;border-radius:999px;border:0;background:var(--ink);color:var(--ground);box-shadow:var(--shadow);cursor:pointer}
+  .tourbtn.hide{display:none}
+  /* ── intro ── */
+  .intro{position:fixed;inset:0;background:rgba(10,10,12,.72);display:grid;place-items:center;z-index:10;padding:16px}
+  .intro.gone{display:none}
+  .card{background:var(--top);color:var(--ink);width:min(520px,100%);border-radius:16px;padding:26px 26px 22px;box-shadow:var(--shadow)}
+  .card .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .card h2{font-size:22px;margin:8px 0 10px;letter-spacing:-.01em;text-wrap:balance}
+  .card p{color:var(--mute);margin:0 0 10px}
+  .card ul{margin:10px 0 0;padding-left:18px;color:var(--mute)}
+  .card .row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .card button{font:600 13px Inter,sans-serif;padding:10px 16px;border-radius:9px;border:1px solid var(--line);background:var(--pill);color:var(--pill-ink);cursor:pointer}
+  .card button.pri{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+  /* ── phones ── */
+  .menubtn{display:none}
+  @media (max-width:860px){
+    .app{grid-template-columns:1fr}
+    .side{position:fixed;inset:0 auto 0 0;width:min(var(--sidew),84vw);z-index:6;transform:translateX(-100%);transition:transform .2s}
+    .side.open{transform:none}
+    .scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:5;display:none}
+    .scrim.show{display:block}
+    .menubtn{display:grid}
+    .top{padding:0 12px;gap:8px}
+    .top .demo,.top .ic:not(.menubtn){display:none}
+    .top h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+    .stage.one{width:100%}
+  }
+</style>
+
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand"><div class="mark">T</div><div><b>The Sidemoney Company</b><small>sidemoney.co</small></div></div>
+    <div class="search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      Search… <kbd>⌘K</kbd>
+    </div>
+    <nav id="nav"></nav>
+    <div class="foot">
+      <div class="row"><span class="btn">Edit sidebar</span><span class="btn">View frontend</span></div>
+      <div class="ver"><span>v2.0.0-beta.10</span><span>PostgreSQL</span></div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <header class="top">
+    <button class="ic menubtn" id="menubtn" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <h1 id="title">Dashboard</h1><span class="demo">Demo · anonymized data</span>
+    <span class="sp"></span>
+    <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg></span>
+    <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg></span>
+    <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/></svg></span>
+    <span class="av">A</span>
+  </header>
+  <main class="main" id="main">
+    <div class="stage" id="stage"><img id="shot" alt="" width="1184"></div>
+    <div class="hint" id="hint"></div>
+  </main>
+</div>
+
+<button class="tourbtn" id="tourbtn">Take the tour</button>
+<div class="tour" id="tour" role="dialog" aria-labelledby="tourh">
+  <div style="display:flex;align-items:center"><span class="step" id="tourstep">Step 1 of 8</span><button class="x" id="tourx" aria-label="Close tour">×</button></div>
+  <h2 id="tourh"></h2><p id="tourp"></p>
+  <div class="row"><button id="tprev">Back</button><button class="pri" id="tnext">Next</button></div>
+</div>
+
+<div class="intro" id="intro">
+  <div class="card">
+    <div class="eyebrow">Therum OS 2.0</div>
+    <h2>The admin behind sidemoney.co, click by click</h2>
+    <p>Every screen here is captured from the live store's admin. Customer names, emails and addresses were replaced with placeholders before capture; everything else is what the merchant sees.</p>
+    <ul>
+      <li>Use the sidebar and the Flow tabs like the real app</li>
+      <li>← → moves between screens, <b>Z</b> toggles 1:1 zoom, <b>Esc</b> closes this</li>
+      <li>Rows and buttons with a blue outline on hover are live</li>
+    </ul>
+    <div class="row"><button class="pri" id="start">Open the admin</button><button id="starttour">Start with the tour</button></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const I = {
+    grid:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+    tag:'<svg viewBox="0 0 24 24"><path d="M20 12 12 20 4 12V4h8z"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>',
+    box:'<svg viewBox="0 0 24 24"><path d="M3 8 12 3l9 5-9 5z"/><path d="M3 8v8l9 5 9-5V8"/></svg>',
+    user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
+    users:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-4 3-6 7-6s7 2 7 6"/><path d="M16 4a3.5 3.5 0 0 1 0 7M18 14c2.5.5 4 2.5 4 6"/></svg>',
+    card:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>',
+    star:'<svg viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></svg>',
+    plug:'<svg viewBox="0 0 24 24"><path d="M9 3v5M15 3v5M6 8h12v4a6 6 0 0 1-12 0z"/><path d="M12 18v3"/></svg>',
+    rss:'<svg viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5"/></svg>',
+    mail:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+    bell:'<svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></svg>',
+    clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    form:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+    cal:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+    doc:'<svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>',
+    img:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 17-6-5-8 8"/></svg>',
+    gear:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.3.9a7 7 0 0 0-1.7-1L14.5 3h-5l-.4 2.4a7 7 0 0 0-1.7 1L5.1 5.5l-2 3.5 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.5 2.3-.9a7 7 0 0 0 1.7 1l.4 2.4h5l.4-2.4a7 7 0 0 0 1.7-1l2.3.9 2-3.5-2-1.5c.1-.3.1-.7.1-1z"/></svg>',
+  };
+  // Flow's own tab row sits at the same place on every Flow screen, so real hotspots go on the real tabs.
+  const FLOW_TABS = [
+    ['flow-subscribers',30,160],['flow-lists',180,255],['flow-segments',268,355],['flow-campaigns',368,495],
+    ['flow-automations',500,625],['flow-forms',640,725],['flow-calendar',740,820],['flow-settings',832,905],
+  ];
+  const flowHots = (self) => FLOW_TABS.filter(([k]) => k !== self && !k.match(/lists|segments/)).map(([k,x1,x2]) => ({x:x1,y:172,w:x2-x1,h:44,go:k,tip:'Open ' + k.replace('flow-','')}));
+  const PAGES = {
+    dashboard:{t:'Dashboard',img:'pages/dashboard.jpg',hots:[{x:28,y:250,w:640,h:250,go:'orders',tip:'Commerce card → Orders'},{x:600,y:430,w:560,h:60,go:'customers',tip:'Customers →'}]},
+    products:{t:'Product Catalog',img:'pages/products.jpg',hots:[]},
+    orders:{t:'Orders',img:'pages/orders.jpg',hots:[]},
+    customers:{t:'Customers',img:'pages/customers.jpg',hots:[]},
+    milieus:{t:'Milieus',img:'pages/milieus.jpg',hots:[]},
+    payments:{t:'Payments & Transactions',img:'pages/payments.jpg',hots:[]},
+    promotions:{t:'Promotions',img:'pages/promotions.jpg',hots:[]},
+    connections:{t:'Connections',img:'pages/connections.jpg',hots:[]},
+    feeds:{t:'Feeds',img:'pages/feeds.jpg',hots:[]},
+    'flow-subscribers':{t:'Flow',img:'pages/flow-subscribers.jpg',hots:flowHots('flow-subscribers')},
+    'flow-campaigns':{t:'Flow',img:'pages/flow-campaigns.jpg',hots:[...flowHots('flow-campaigns'),{x:24,y:334,w:1136,h:66,go:'flow-campaign-editor',tip:'Open the newsletter in the composer'}]},
+    'flow-campaign-editor':{t:'Flow · Campaign',img:'pages/flow-campaign-editor.jpg',hots:[{x:0,y:0,w:300,h:60,go:'flow-campaigns',tip:'Back to campaigns'}]},
+    'flow-automations':{t:'Flow',img:'pages/flow-automations.jpg',hots:flowHots('flow-automations')},
+    'flow-forms':{t:'Flow',img:'pages/flow-forms.jpg',hots:flowHots('flow-forms')},
+    'flow-calendar':{t:'Flow',img:'pages/flow-calendar.jpg',hots:flowHots('flow-calendar')},
+    'flow-settings':{t:'Flow',img:'pages/flow-settings.jpg',hots:flowHots('flow-settings')},
+    content:{t:'Content',img:'pages/content.jpg',hots:[]},
+    media:{t:'Media',img:'pages/media.jpg',hots:[]},
+    settings:{t:'Settings',img:'pages/settings.jpg',hots:[]},
+  };
+  const NAV = [
+    {g:'Counter',items:[['dashboard','Dashboard',I.grid],['products','Product Catalog',I.tag],['orders','Orders',I.box],['customers','Customers',I.user],['milieus','Milieus',I.users],['payments','Payments & Transactions',I.card],['promotions','Promotions',I.star],['connections','Connections',I.plug],['feeds','Feeds',I.rss]]},
+    {g:'Flow',items:[['flow-subscribers','Subscribers',I.mail],['flow-campaigns','Campaigns',I.bell],['flow-automations','Automations',I.clock],['flow-forms','Forms',I.form],['flow-calendar','Calendar',I.cal],['flow-settings','Settings',I.gear]]},
+    {g:'Site',items:[['content','Content',I.doc],['media','Media',I.img],['settings','Settings',I.gear]]},
+  ];
+  const ORDER = NAV.flatMap((g) => g.items.map((i) => i[0]));
+  const TOUR = [
+    ['dashboard','One screen, every domain','Revenue, orders, site health and audience on one page. Each card is a domain of the store; the merchant lays them out.'],
+    ['orders','Orders as they happen','Every order with its payment state, fulfilment status and a one-click advance. Vendors receive only their own lines.'],
+    ['products','A catalog that syncs itself','Products pulled from print-on-demand partners hourly, with visibility control per product: public, unlisted, members-only, or restricted to named accounts.'],
+    ['milieus','Customer groups with real effects','A group like Friends & Family changes prices at the cart, not with a code. Membership can expire, be pending, or be permanent.'],
+    ['flow-subscribers','Flow: the list','Consent lives here. Every send in the system reads this table; an opt-out anywhere is honoured everywhere the moment it happens.'],
+    ['flow-campaign-editor','Flow: the composer','Blocks with drag-reorder, per-block HTML you can edit, a live preview, one-click test send, and scheduling into a weekly slot.'],
+    ['flow-automations','Flow: automations','Welcome with a code, abandoned cart, review ask, win-back. Each is a real email the merchant edits in the same composer.'],
+    ['connections','Everything it talks to','Payments, fulfilment partners, mail, SMS. Credentials are stored encrypted and never shown again; this is the store’s view of what is wired up.'],
+  ];
+  const $ = (s) => document.querySelector(s);
+  const nav = $('#nav'), shot = $('#shot'), stage = $('#stage'), title = $('#title'), main = $('#main'), hint = $('#hint');
+  let cur = 'dashboard', hintT = null;
+  NAV.forEach((g) => {
+    const h = document.createElement('div'); h.className = 'group'; h.innerHTML = g.g + ' <i>›</i>'; nav.appendChild(h);
+    g.items.forEach(([k, label, ic]) => {
+      const b = document.createElement('button'); b.className = 'item'; b.dataset.k = k; b.innerHTML = ic + '<span>' + label + '</span>';
+      b.addEventListener('click', () => { go(k); closeMenu(); });
+      nav.appendChild(b);
+    });
+  });
+  function paintHots(p) {
+    stage.querySelectorAll('.hot').forEach((h) => h.remove());
+    const W = 1184, H = shot.naturalHeight || 1;
+    (p.hots || []).forEach((h) => {
+      const b = document.createElement('button'); b.className = 'hot'; b.setAttribute('aria-label', h.tip);
+      b.style.left = (h.x / W * 100) + '%'; b.style.top = (h.y / H * 100) + '%'; b.style.width = (h.w / W * 100) + '%'; b.style.height = (h.h / H * 100) + '%';
+      b.addEventListener('click', (e) => { e.stopPropagation(); go(h.go); });
+      b.addEventListener('mouseenter', () => showHint(h.tip)); b.addEventListener('mouseleave', hideHint);
+      stage.appendChild(b);
+    });
+  }
+  function go(k) {
+    const p = PAGES[k]; if (!p) return;
+    cur = k; title.textContent = p.t;
+    nav.querySelectorAll('.item').forEach((b) => b.classList.toggle('on', b.dataset.k === k || (k === 'flow-campaign-editor' && b.dataset.k === 'flow-campaigns')));
+    shot.onload = () => paintHots(p);
+    shot.src = p.img; shot.alt = p.t + ' screen';
+    main.scrollTop = 0;
+    try { history.replaceState(null, '', '#' + k); } catch (e) {}
+  }
+  function showHint(t) { clearTimeout(hintT); hint.textContent = t; hint.classList.add('show'); }
+  function hideHint() { hintT = setTimeout(() => hint.classList.remove('show'), 120); }
+  stage.addEventListener('click', () => stage.classList.toggle('one'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { $('#intro').classList.add('gone'); closeTour(); return; }
+    if (e.target.tagName === 'INPUT') return;
+    const i = ORDER.indexOf(cur === 'flow-campaign-editor' ? 'flow-campaigns' : cur);
+    if (e.key === 'ArrowRight') go(ORDER[(i + 1) % ORDER.length]);
+    if (e.key === 'ArrowLeft') go(ORDER[(i - 1 + ORDER.length) % ORDER.length]);
+    if (e.key.toLowerCase() === 'z') stage.classList.toggle('one');
+  });
+  // tour
+  let step = 0; const tour = $('#tour');
+  function showStep() { const [k, h, p] = TOUR[step]; go(k); $('#tourstep').textContent = 'Step ' + (step + 1) + ' of ' + TOUR.length; $('#tourh').textContent = h; $('#tourp').textContent = p; $('#tprev').disabled = step === 0; $('#tnext').textContent = step === TOUR.length - 1 ? 'Finish' : 'Next'; }
+  function openTour() { step = 0; tour.classList.add('open'); $('#tourbtn').classList.add('hide'); showStep(); }
+  function closeTour() { tour.classList.remove('open'); $('#tourbtn').classList.remove('hide'); }
+  $('#tourbtn').addEventListener('click', openTour); $('#tourx').addEventListener('click', closeTour);
+  $('#tprev').addEventListener('click', () => { if (step > 0) { step--; showStep(); } });
+  $('#tnext').addEventListener('click', () => { if (step < TOUR.length - 1) { step++; showStep(); } else closeTour(); });
+  $('#start').addEventListener('click', () => $('#intro').classList.add('gone'));
+  $('#starttour').addEventListener('click', () => { $('#intro').classList.add('gone'); openTour(); });
+  // phone menu
+  const side = $('#side'), scrim = $('#scrim');
+  function closeMenu() { side.classList.remove('open'); scrim.classList.remove('show'); }
+  $('#menubtn').addEventListener('click', () => { side.classList.add('open'); scrim.classList.add('show'); });
+  scrim.addEventListener('click', closeMenu);
+  const start = (location.hash || '').slice(1);
+  go(PAGES[start] ? start : 'dashboard');
+})();
+</script>

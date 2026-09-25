@@ -6,8 +6,9 @@ Scope: UNIVERSAL mechanism · per-project content. Durable user/project facts go
 > **Consolidated 2026-09-12.** The full dated decision log (83 entries, Aug 2026 and
 > earlier — POD/vendor connect fixes, email/SMTP, category templates, WooPayments
 > build, all resolved and baked into code) is archived in `memory.backup-20260912.md`.
-> This file is the LEAN current state. Deep topic knowledge lives in the `/memory/*.md`
-> files (indexed in the auto-memory `MEMORY.md`) — point to them, do not duplicate.
+> This file is the LEAN current state. Deep topic knowledge lives in **`_core/knowledge/*.md`**
+> (indexed in `_core/knowledge/MEMORY.md`) — the Drive mirror of the auto-memory, re-synced at every
+> loop close by `_core/tools/sync-knowledge.sh`. Point to those files, do not duplicate them here.
 
 ## ⭐ WHAT SIDEMONEY.CO IS — VERIFIED live 2026-09-12 (not Bricks — read this)
 - **sidemoney.co = a custom Therum OS 2.0 app** (Fastify/Node + Prisma/Postgres), LIVE since
@@ -150,3 +151,29 @@ awaits a live/sandbox capture to certify.
 - Concerns: DMARC `p=none` (tighten after Postmark history); GET unsubscribe mutates on GET; SMS/Twilio never exercised; `certbot delete pay.sidemoney.co` done by Bam.
 - Memory consolidated 2026-09-19: `marketing-module-groundwork.md` (27KB build log) → `flow-marketing-module.md`; `consolidate-every-turn.md` folded into `bam-working-style.md`; port-law got a "what actually shipped" banner; launch-state trimmed; MEMORY.md reorganised by topic (36 files, all indexed).
 
+
+## 2026-09-20 — Instagram tagging, Fresco F&F, invite-only snapback, Postmark still pending (status: DONE_WITH_CONCERNS)
+- Instagram product tagging errored. Server side proved clean with Meta's own crawler UAs (facebookcatalog/externalads/externalhit all 200 through Cloudflare; nginx shows daily 04:00Z feed fetches at 200). Real feed defect found and fixed: the 5 Foot Locker exclusives (`meta.externalUrl`, PDP 302s off-site since 09-16) were still in `/feed/facebook.xml` → Meta rejects off-domain items. Feed now 795 items / 70 products, all links 200 on-domain. Bam: tagging still errors after that and "everything looks right" in Commerce Manager → parked; needs Commerce Manager Overview + Items screenshots.
+- Friends & Family: `fresco.pbm@gmail.com` existed as wp-migration customer "Terrence Jones" (1 order) → renamed Fresco per Bam, added to F&F (26 members), welcome sent + proved in Gmail Sent (fire-and-forget mailer dies with process.exit — await it). Recipe in knowledge `wp-customer-migration.md`.
+- Invite-only drop: Printful "Bird Season Kelly Green Limited Edition Snapback" arrived from the hourly sync `active public` at 23:00:11Z; on-box 3s poller flipped it to `restricted` 16ms later, `ProductAccess` grants to `bam@beta.sidemoney.co` + Fresco, one email each (Bam's copy: "now available in your account. Sign in to purchase."). Verified outside: PDP 404, not on /shop/search/sitemap/feed, cart add 404. Recipe in knowledge `storefront-merchandising.md`.
+- Postmark: at 18:42 ET I called it approved off a send to `test@blackhole.postmarkapp.com` — wrong, that domain is exempt from the pending rule; 19:00 ET real off-domain send got 412 again. Still PENDING. Off-domain mail rides the 412 fallback to Gmail. Bam to request approval in the dashboard.
+- Failures logged: FAILURES.md (Foot Locker redirect broke tagging; blackhole "approval").
+- Concerns: Printful billing card expired → Fresco's purchase would not fulfil; DMARC `p=none`; Gmail "Delay" DSNs for 5 Friday recipients until ~09-21 morning (Google's queue, uncancellable).
+
+## 2026-09-21 — Case-study captures + interactive admin demo (status: DONE)
+- 19 admin pages captured headlessly (puppeteer-core in scratchpad, admin cookie from `scripts/mint-jwt.mjs` written to a file) with an in-page scrub driven by the real DB (225 customer/subscriber/address strings replaced, placeholders filtered against that list so none collide) + regex sweep + a second pass asserting 0 real names / 0 real emails / 0 keys in innerText. Flat set: `addons/tsc/case-study/admin-screens-2026-09-21/` (JPEG + `png-2x/`).
+- Interactive demo published: https://claude.ai/artifact/Rhyot7tydaWwApDJRwfwQ4 (rebuilt sidebar + Flow-tab hotspots over the captures, 8-step tour, phone layout). Source: `addons/tsc/case-study/admin-demo/`.
+- Fixed on the live store while capturing: `settings.site.tagline` was still `AuditTag` → cleared, Redis settings cache flushed, homepage verified 0 occurrences.
+- Still real in the images (Bam's call): dollar figures, order numbers, vendor names, bank last-4 (app-masked).
+
+## 2026-09-22 — Signal (Meta Pixel + Conversions API) built as a Studio app (status: DONE_WITH_CONCERNS)
+- Trigger: Bam's Meta ads plan (creative-first Advantage+, 10–15 concepts, launch early Oct for Sixers drop + Gather Oct 31). Its step 1 assumed WooCommerce's plugin — the store had NO pixel and NO CAPI. Bam: "ok lets do it".
+- Product repo `d784d89`: browser runtime (both shells, off until a pixel ID is saved), server Purchase from `onOrderPaid` (fire-and-forget, hashed identifiers, shared event id with the browser Purchase), `_fbp/_fbc/IP/UA` captured at checkout onto `order.meta.signal`, admin `/signal` Studio app, Nexus credential `meta-capi`, CSP for Meta's two hosts. Verified live OFF: `/api/shop/signal` → null, cart 201 + checkout 200 unaffected, `/api/signal` 401 unauth.
+- Needs from Bam to turn on: Pixel ID + CAPI token; then test-event verification in Events Manager and CLEAR the test code. Should be on ~a week before ads launch.
+- Not built: the spend-vs-real-revenue scoreboard (part 2).
+- Changelog for 09-18→09-22 added to the product repo (`f38fb64`) under "Unreleased — since beta.10".
+
+## 2026-09-25 — Bam: "is all this work added to the mds on drive?" — it was NOT all there (status: DONE)
+- What was missing: loop entries 09-20/21/22 (added above); the 41 deep auto-memory files lived only in `~/.claude/projects/…/memory/` on the Mac, never in this folder — now mirrored to `_core/knowledge/` (index `_core/knowledge/MEMORY.md`) and re-synced at every loop close via `_core/tools/sync-knowledge.sh`; FAILURES.md + case-study folder were on Drive but uncommitted; product CHANGELOG had nothing since beta.10.
+- Also found: `/Users/bam/Local Sites/therum-os/therum-cms-2` no longer existed on the Mac. GitHub main = `d784d89` (Signal), nothing lost; re-cloned to the same path.
+- Failure logged: claiming work was "recorded/saved" while the canonical folder did not have it.
